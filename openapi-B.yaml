@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: B - Membres
+  version: 1.0.0
+
+paths:
+  /members/applications:
+    post:
+      summary: Demande d’adhésion
+      description: Nécessite un parrain confirmé avec ancienneté ≥ 90 jours.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [firstName, lastName, phone, sponsorId]
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phone:
+                  type: string
+                sponsorId:
+                  type: integer
+      responses:
+        '200':
+          description: Demande créée
+        '400':
+          description: Parrain invalide
+
+  /members/applications/{id}/pay:
+    post:
+      summary: Paiement adhésion (50 000 MGA)
+      responses:
+        '200':
+          description: Paiement validé
+        '400':
+          description: Paiement incorrect
+
+  /members/applications/{id}/validate:
+    post:
+      summary: Validation finale membre
+      responses:
+        '200':
+          description: Membre activé
+        '403':
+          description: Refus
