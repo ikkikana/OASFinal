@@ -4,16 +4,18 @@ info:
   version: 1.0.0
 
 paths:
+
   /members/applications:
     post:
       summary: Demande d’adhésion
       description: Nécessite un parrain confirmé avec ancienneté ≥ 90 jours.
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
-              required: [firstName, lastName, phone, sponsorId]
+              required: [firstName, lastName, phone, sponsorId, collectivityId]
               properties:
                 firstName:
                   type: string
@@ -21,17 +23,51 @@ paths:
                   type: string
                 phone:
                   type: string
+                email:
+                  type: string
                 sponsorId:
+                  type: integer
+                collectivityId:
                   type: integer
       responses:
         '200':
           description: Demande créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  applicationId:
+                    type: integer
+                  status:
+                    type: string
+                    example: PENDING
         '400':
           description: Parrain invalide
 
   /members/applications/{id}/pay:
     post:
       summary: Paiement adhésion (50 000 MGA)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount:
+                  type: number
+                  example: 50000
+                method:
+                  type: string
+                  example: MOBILE_MONEY
       responses:
         '200':
           description: Paiement validé
@@ -41,8 +77,24 @@ paths:
   /members/applications/{id}/validate:
     post:
       summary: Validation finale membre
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: Membre activé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  memberId:
+                    type: integer
+                  status:
+                    type: string
+                    example: ACTIVE
         '403':
           description: Refus
